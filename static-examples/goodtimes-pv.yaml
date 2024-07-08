@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: goodtimes
+  namespace: hammerspace
+spec:
+  capacity:
+   storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+   - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-csi-gold
+  claimRef:
+    name: goodtimes-pvc
+    namespace: hammerspace
+  mountOptions:
+   - hard
+   - nfsvers=4.2
+   - port=20491
+  nfs:
+   path: /goodtimes
+   server: 192.168.100.5

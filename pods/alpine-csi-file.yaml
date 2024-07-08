@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alpine-hs-file
+  namespace: hammerspace-csi
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: hs-storage-file-backed
+
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: alpine-hs-file
+  namespace: hammerspace-csi
+spec:
+  containers:
+    - image: alpine:latest
+      name: alpine
+      command:
+        - "/bin/sh"
+        - "-c"
+        - set -euo pipefail; while true; do echo $(date) >> /mnt/nfs/alpine-hs; sleep 1; done
+      volumeMounts:
+        - name: vol1
+          mountPath: "/mnt/nfs"
+          readOnly: false
+  volumes:
+    - name: vol1
+      persistentVolumeClaim:
+        claimName: alpine-hs-file

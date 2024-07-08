@@ -1,0 +1,64 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-data
+  namespace: hammerspace
+spec:
+  accessModes:
+  - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: hs-storage
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: hammerspace
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: topology.csi.hammerspace.com/is-data-portal
+          operator: In
+          values:
+          - "true"
+          - "false"
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - preference:
+        matchExpressions:
+          - key: topology.csi.hammerspace.com/is-data-portal
+            operator: In
+            values:
+            - "false"
+      weight: 1
+  strategy:
+    type: Recreate
+  replicas: 1 #Let's start with 1 pod
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: nginx
+        volumeMounts:
+        - name: nginx-data
+          mountPath: /mnt/nfs
+      volumes:
+      - name: nginx-data
+        persistentVolumeClaim:
+          claimName: nginx-data
