@@ -3,11 +3,12 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: hs-storage-2-mo
+  name: hs-storage-retain
   namespace: kube-system
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
 provisioner: com.hammerspace.csi
+reclaimPolicy: Retain
 parameters:
   fsType: "nfs"
   # Optional, for use if we are supporting BlockVolumes. Auto-created if it does not exist. Never deleted by the driver

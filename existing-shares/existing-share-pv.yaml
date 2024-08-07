@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: com.hammerspace.csi
+  # You can name this whatever you prefer
+  name: pptest1
+  labels:
+    name: originally-in-ns1
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  csi:
+    driver: com.hammerspace.csi
+    fsType: nfs
+    volumeAttributes:
+      mode: Filesystem
+    # Use the existing share name here
+    volumeHandle: /csi-pvc-d741d843-20f5-46ba-b6f3-ea9400096d8f
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hs-storage
+  volumeMode: Filesystem

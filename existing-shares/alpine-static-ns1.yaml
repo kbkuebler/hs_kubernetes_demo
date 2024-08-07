@@ -1,0 +1,37 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: pptest1
+  name: alpine-share-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: pptest1
+  volumeMode: Filesystem
+  storageClassName: hs-storage
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: alpine-ns1
+  namespace: pptest1
+spec:
+  containers:
+    - image: alpine:latest
+      name: alpine
+      command:
+        - "/bin/sh"
+        - "-c"
+        - set -euo pipefail; while true; do echo "alpine-share-1 $(date)" >> /mnt/nfs/outfile; sleep 1; done
+      volumeMounts:
+        - name: vol1
+          mountPath: "/mnt/nfs"
+          readOnly: false
+  volumes:
+    - name: vol1
+      persistentVolumeClaim:
+        claimName: alpine-share-1
