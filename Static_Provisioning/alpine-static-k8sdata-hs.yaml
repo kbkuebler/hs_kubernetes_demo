@@ -1,0 +1,42 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: hammerspace
+  name: alpine-k8sdata
+  labels:
+    app: csi-testing
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: k8sdata-1
+  volumeMode: Filesystem
+  storageClassName: hs-storage-share
+
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: alpine-nfs-3
+  namespace: hammerspace
+  labels:
+    app: csi-testing
+spec:
+  containers:
+    - image: alpine:latest
+      name: alpine
+      command:
+        - "/bin/sh"
+        - "-c"
+        - set -euo pipefail; while true; do echo "alpine-nfs-3 $(date)" >> /mnt/nfs/nfs-3-outfile; sleep 10; done
+      volumeMounts:
+        - name: vol1
+          mountPath: "/mnt/nfs"
+          readOnly: false
+  volumes:
+    - name: vol1
+      persistentVolumeClaim:
+        claimName: alpine-k8sdata

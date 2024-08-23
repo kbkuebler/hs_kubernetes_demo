@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nfs-csi-dynamic
+  labels:
+    name: nfs-csi-dynamic
+    
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alpine-dynamic-nfs
+  namespace: nfs-csi-dynamic
+  labels:
+    app: csi-testing
+spec:
+  accessModes:
+  - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs-csi
+
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: alpine-dynamic-nfs
+  namespace: nfs-csi-dynamic
+  labels:
+    app: csi-testing
+spec:
+  containers:
+    - image: alpine:latest
+      name: alpine
+      command:
+        - "/bin/sh"
+        - "-c"
+        - set -euo pipefail; while true; do echo "alpine-dynamic-1 $(date)" >> /mnt/nfs/alpine-dynamic-nfs; sleep 10; done
+      volumeMounts:
+        - name: vol1
+          mountPath: "/mnt/nfs"
+          readOnly: false
+  volumes:
+    - name: vol1
+      persistentVolumeClaim:
+        claimName: alpine-dynamic-nfs

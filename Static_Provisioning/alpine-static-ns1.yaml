@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nfs-static-1
+  labels:
+    name: nfs-static-1
+    
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: nfs.csi.k8s.io
+  name: nfs-csi-static-1
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-csi
+  mountOptions:
+    - nfsvers=3
+  csi:
+    driver: nfs.csi.k8s.io
+    # volumeHandle format: {nfs-server-address}#{sub-dir-name}#{share-name}
+    # make sure this value is unique for every share in the cluster
+    volumeHandle: 192.168.100.6/k8sdata
+    volumeAttributes:
+      server: 192.168.100.6
+      share: /k8sdata
+    
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: nfs-static-1
+  name: alpine-share-attach-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: nfs-csi-static-1
+  volumeMode: Filesystem
+  storageClassName: nfs-csi
+
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: alpine-static-1
+  namespace: nfs-static-1
+spec:
+  containers:
+    - image: alpine:latest
+      name: alpine
+      command:
+        - "/bin/sh"
+        - "-c"
+        - set -euo pipefail; while true; do echo "alpine-static-1 $(date)" >> /mnt/nfs/alpine-static-1-outfile; sleep 10; done
+      volumeMounts:
+        - name: vol1
+          mountPath: "/mnt/nfs"
+          readOnly: false
+  volumes:
+    - name: vol1
+      persistentVolumeClaim:
+        claimName: alpine-share-attach-1

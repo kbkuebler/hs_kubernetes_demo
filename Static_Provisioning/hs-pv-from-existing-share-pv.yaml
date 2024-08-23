@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    pv.kubernetes.io/provisioned-by: com.hammerspace.csi
+  # You can name this whatever you prefer
+  name: k8sdata-1
+  labels:
+    app: csi-testing
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  csi:
+    driver: com.hammerspace.csi
+    fsType: nfs
+    volumeAttributes:
+      server: "192.168.100.6"
+      share: "/k8sdata"
+      mode: Filesystem
+    # Use the the host and existing share name here for a unique handle
+    volumeHandle: /k8sdata
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hs-storage-share
+  volumeMode: Filesystem
+  mountOptions:
+    - nfsvers=3
