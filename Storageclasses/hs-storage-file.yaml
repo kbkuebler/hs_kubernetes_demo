@@ -11,7 +11,7 @@ parameters:
   # ext4 or xfs.
   fsType: "ext4"
   # Optional, for use if we are supporting file-backed Mount volumes. Auto-created if it does not exist. Never deleted by the driver
-  mountBackingShareName: k8s-file-storage
+  mountBackingShareName: k8s-file-backed
   # Objectives to set on shares in addition to HS cluster defaults
   objectives: "keep-online"
   # The name format of provisioned volumes, %s is replaced with pvc-<uuid>
