@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fio-config
+  namespace: fio-testing
+data:
+  fio-job.fio: |
+    [global]
+    ioengine=libaio
+    direct=1
+    rw=readwrite       # Sequential read and write
+    bs=1m              # Block size
+    size=800M          # File size per job
+    numjobs=4          # Number of jobs (threads)
+    runtime=30         # Run for 30 seconds (1 minute)
+    time_based=1       # Run based on time, not total size
+    group_reporting    # Group results together
+    iodepth=64         # Queue depth
+
+    [job1]
+    filename=/data/subpath1/testfile1
+
+    [job2]
+    filename=/data/subpath2/testfile2
+
+    [job3]
+    filename=/data/subpath1/testfile3
+
+    [job4]
+    filename=/data/subpath2/testfile4
+

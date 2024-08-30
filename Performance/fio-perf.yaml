@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fio
+  namespace: fio-testing
+  labels:
+    app: fio
+spec:
+  serviceName: "fio"
+  replicas: 1  # Start with a single replica
+  selector:
+    matchLabels:
+      app: fio
+  template:
+    metadata:
+      labels:
+        app: fio
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - fio
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: fio
+          image: kbkuebler/fio:latest
+          command: ["fio"]
+          args: ["/config/fio-job.fio"]
+          volumeMounts:
+            - name: fio-config
+              mountPath: /config
+            - name: fio-storage
+              mountPath: /data/subpath1
+              subPath: subpath1
+            - name: fio-storage
+              mountPath: /data/subpath2
+              subPath: subpath2
+      volumes:
+        - name: fio-config
+          configMap:
+            name: fio-config
+  volumeClaimTemplates:
+    - metadata:
+        name: fio-storage
+      spec:
+        accessModes: [ "ReadWriteMany" ]
+        storageClassName: "nfs-csi"
+        resources:
+          requests:
+            storage: 1Gi  # Start with 1Gi of storage
