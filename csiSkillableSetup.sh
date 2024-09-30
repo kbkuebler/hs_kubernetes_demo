@@ -2,7 +2,7 @@
 
 # Update Oracle Linux
 echo "Updating Oracle Linux..."
-sudo yum update -y
+sudo yum install git-core -y
 
 # Install a single-node K3s cluster
 echo "Installing K3s..."
@@ -31,7 +31,7 @@ data:
   password: UGFzc3cwcmQh
   username: YWRtaW4=
 stringData:
-  endpoint: 10.200.76.102
+  endpoint: "https://10.200.76.102"
 kind: Secret
 metadata:
   name: com.hammerspace.csi.credentials
