@@ -54,6 +54,14 @@ EOF
 echo "Applying Kubernetes CSI plugin for version 1.25..."
 kubectl apply -f csi-plugin/deploy/kubernetes/kubernetes-1.25
 
+# Clone hs_kubernetes_demo repository from the new URL
+echo "Cloning hs_kubernetes_demo repository..."
+git clone https://github.com/kbkuebler/hs_kubernetes_demo.git
+
+# Apply hs-storage-share.yaml
+echo "Applying hs-storage-share.yaml..."
+kubectl apply -f https://raw.githubusercontent.com/kbkuebler/hs_kubernetes_demo/refs/heads/master/Storageclasses/hs-storage-share.yaml
+
 # Download and install K9s
 echo "Downloading K9s..."
 curl -Lo k9s_Linux_amd64.tar.gz https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_Linux_amd64.tar.gz
