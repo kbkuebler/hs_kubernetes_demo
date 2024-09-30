@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update Oracle Linux
-echo "Updating Oracle Linux..."
+echo "Installing git..."
 sudo yum install git-core -y
 
 # Install a single-node K3s cluster
@@ -31,7 +31,7 @@ data:
   password: UGFzc3cwcmQh
   username: YWRtaW4=
 stringData:
-  endpoint: "https://10.200.76.102"
+  endpoint: "https://hs-la.hammer.local"
 kind: Secret
 metadata:
   name: com.hammerspace.csi.credentials
