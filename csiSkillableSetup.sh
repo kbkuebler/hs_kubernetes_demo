@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Update Oracle Linux
-echo "Installing git..."
-sudo yum install git-core -y
+# Install git-core
+echo "Installing git-core..."
+sudo yum install -y git-core
 
 # Install a single-node K3s cluster
 echo "Installing K3s..."
@@ -12,8 +12,20 @@ curl -sfL https://get.k3s.io | sh -
 echo "Waiting for K3s to be ready..."
 sleep 60
 
-# Set kubectl to use K3s
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+# Create .kube directory and copy K3s kubeconfig file
+echo "Configuring KUBECONFIG..."
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(id -u):$(id -g) ~/.kube/config
+export KUBECONFIG=~/.kube/config
+
+# Enable Kubernetes autocompletion
+echo "Enabling Kubernetes autocompletion..."
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+echo "source <(kubeadm completion bash)" >> ~/.bashrc
+
+# Reload bash
+source ~/.bashrc
 
 # Validate K3s installation
 echo "Validating K3s installation..."
@@ -31,7 +43,7 @@ data:
   password: UGFzc3cwcmQh
   username: YWRtaW4=
 stringData:
-  endpoint: "https://hs-la.hammer.local"
+  endpoint: "https://la-anvil-1.hammer.local"
 kind: Secret
 metadata:
   name: com.hammerspace.csi.credentials
@@ -41,5 +53,19 @@ EOF
 # Apply the Kubernetes CSI plugin for version 1.25
 echo "Applying Kubernetes CSI plugin for version 1.25..."
 kubectl apply -f csi-plugin/deploy/kubernetes/kubernetes-1.25
+
+# Download and install K9s
+echo "Downloading K9s..."
+curl -Lo k9s_Linux_amd64.tar.gz https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_Linux_amd64.tar.gz
+
+echo "Extracting K9s..."
+tar -xzf k9s_Linux_amd64.tar.gz
+
+echo "Moving K9s executable to /usr/local/bin..."
+sudo mv k9s /usr/local/bin/
+
+# Clean up
+echo "Cleaning up..."
+rm k9s_Linux_amd64.tar.gz
 
 echo "All tasks completed!"
