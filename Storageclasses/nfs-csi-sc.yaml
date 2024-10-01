@@ -4,8 +4,8 @@ metadata:
   name: nfs-csi
 provisioner: nfs.csi.k8s.io
 parameters:
-#NOTE: This share must already exist on the NFS Server
-  server: 192.168.100.6
+#NOTE: This share must already exist on the NFS Server. Change to your NFS ip address if necessary.
+  server: 10.200.76.102
   share: /k8sdata
   # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
   # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
