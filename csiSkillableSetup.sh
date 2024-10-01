@@ -1,4 +1,7 @@
 #!/bin/bash
+#Brian Kuebler - 10/24
+set -e
+set -o pipefail
 
 # Install git-core
 echo "Installing git-core..."
