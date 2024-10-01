@@ -8,9 +8,13 @@ sudo yum install -y git-core
 echo "Installing K3s..."
 curl -sfL https://get.k3s.io | sh -
 
-# Wait for K3s to be ready
+# Wait for K3s to be ready by checking node status
 echo "Waiting for K3s to be ready..."
-sleep 60
+while [[ $(kubectl get nodes -o=jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do
+  echo "K3s node is not ready yet. Retrying in 5 seconds..."
+  sleep 5
+done
+echo "K3s node is ready!"
 
 # Create .kube directory and copy K3s kubeconfig file
 echo "Configuring KUBECONFIG..."
