@@ -26,7 +26,6 @@ export KUBECONFIG=~/.kube/config
 # Enable Kubernetes autocompletion
 echo "Enabling Kubernetes autocompletion..."
 echo "source <(kubectl completion bash)" >> ~/.bashrc
-echo "source <(kubeadm completion bash)" >> ~/.bashrc
 
 # Reload bash
 source ~/.bashrc
