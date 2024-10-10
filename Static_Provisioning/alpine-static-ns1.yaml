@@ -26,9 +26,9 @@ spec:
     driver: nfs.csi.k8s.io
     # volumeHandle format: {nfs-server-address}#{sub-dir-name}#{share-name}
     # make sure this value is unique for every share in the cluster
-    volumeHandle: 192.168.100.6/k8sdata
+    volumeHandle: 10.200.76.102/k8sdata
     volumeAttributes:
-      server: 192.168.100.6
+      server: 10.200.76.102
       share: /k8sdata
     
 ---
